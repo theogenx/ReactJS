@@ -1,0 +1,96 @@
+import React from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import SankeyModule from 'highcharts/modules/sankey';
+
+SankeyModule(Highcharts);
+
+// Gemeinsame Datenbasis
+const nodes = [
+  { id: 'Input', color: '#7cb5ec' },
+  { id: 'Process', color: '#434348' },
+  { id: 'Output', color: '#90ed7d' }
+];
+
+const sankeyData = [
+  ['Input', 'Process', 50],
+  ['Process', 'Output', 30],
+  ['Process', 'Loss', 20]
+];
+
+const barDataTop = [120, 95, 80];
+const barDataBottom = [30, 20, 15];
+
+// Globales Tooltip-Format
+Highcharts.setOptions({
+  tooltip: {
+    formatter() {
+      return `${this.point.name || this.key}: ${this.y} Units`;
+    },
+    shared: true
+  }
+});
+
+const SankeyWithBars = () => {
+  const options = {
+    chart: { type: 'sankey', inverted: true, height: 400 },
+    title: { text: 'Prozessanalyse' },
+    plotOptions: {
+      series: {
+        cursor: 'pointer',
+        events: {
+          mouseOver() {
+            // Synchronisiere Hover-Events
+            Highcharts.charts.forEach(chart => {
+              if (chart !== this.chart) {
+                chart.tooltip.refresh(this.points);
+              }
+            });
+          }
+        }
+      }
+    },
+    series: [{
+      type: 'sankey',
+      nodes,
+      data: sankeyData,
+      linkColorMode: 'gradient'
+    }]
+  };
+
+  const barOptionsTop = {
+    chart: { type: 'column' },
+    title: { text: 'Eingangsdaten' },
+    xAxis: { categories: ['Material', 'Energie', 'Personal'] },
+    series: [{
+      data: barDataTop.map((y, i) => ({
+        y,
+        name: nodes[i].id,
+        color: nodes[i].color
+      }))
+    }]
+  };
+
+  const barOptionsBottom = {
+    chart: { type: 'column' },
+    title: { text: 'Ausgangsdaten' },
+    xAxis: { categories: ['Produkt', 'Abwärme', 'Verluste'] },
+    series: [{
+      data: barDataBottom.map((y, i) => ({
+        y,
+        name: ['Output', 'Loss', 'Loss'][i],
+        color: nodes[i].color
+      }))
+    }]
+  };
+
+  return (
+    <div className="chart-container">
+      <HighchartsReact highcharts={Highcharts} options={barOptionsTop} />
+      <HighchartsReact highcharts={Highcharts} options={options} />
+      <HighchartsReact highcharts={Highcharts} options={barOptionsBottom} />
+    </div>
+  );
+};
+
+export default SankeyWithBars;
