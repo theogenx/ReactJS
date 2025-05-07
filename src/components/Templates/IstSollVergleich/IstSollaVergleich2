@@ -1,0 +1,51 @@
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import SankeyModule from 'highcharts/modules/sankey';
+import VariwideModule from 'highcharts/modules/variwide';
+
+const variwideOptionsTop = {
+  chart: { type: 'variwide', height: 200 },
+  title: { text: 'Eingangsdaten (Variwide)' },
+  xAxis: { type: 'category', title: { text: 'Kategorie' } },
+  series: [{
+    name: 'Input',
+    data: [
+      ['Material', 120, 10], // [Kategorie, Höhe (y), Breite (z)]
+      ['Energie', 95, 7],
+      ['Personal', 80, 5]
+    ],
+    dataLabels: { enabled: true },
+    tooltip: {
+      pointFormat: 'Wert: <b>{point.y}</b><br>Breite: <b>{point.z}</b>'
+    },
+    colorByPoint: true
+  }]
+};
+
+const variwideOptionsBottom = {
+  chart: { type: 'variwide', height: 200 },
+  title: { text: 'Ausgangsdaten (Variwide)' },
+  xAxis: { type: 'category', title: { text: 'Kategorie' } },
+  series: [{
+    name: 'Output',
+    data: [
+      ['Produkt', 30, 8],
+      ['Abwärme', 20, 6],
+      ['Verluste', 15, 4]
+    ],
+    dataLabels: { enabled: true },
+    tooltip: {
+      pointFormat: 'Wert: <b>{point.y}</b><br>Breite: <b>{point.z}</b>'
+    },
+    colorByPoint: true
+  }]
+};
+
+
+const SankeyWithVariwide = () => (
+  <div>
+    <HighchartsReact highcharts={Highcharts} options={variwideOptionsTop} />
+    <HighchartsReact highcharts={Highcharts} options={sankeyOptions} />
+    <HighchartsReact highcharts={Highcharts} options={variwideOptionsBottom} />
+  </div>
+);
